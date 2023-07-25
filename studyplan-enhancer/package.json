@@ -1,0 +1,22 @@
+{
+  "name": "psut-studyplan-enhancer",
+  "version": "1.0.0",
+  "description": "A simple script to add some styling and functionalities to PSUT's study plan page.",
+  "main": "main.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmohmans/psut-tools.git"
+  },
+  "keywords": [
+    "PSUT"
+  ],
+  "author": "Mo Mansour",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsmohmans/psut-tools/issues"
+  },
+  "homepage": "https://github.com/itsmohmans/psut-tools#readme"
+}
