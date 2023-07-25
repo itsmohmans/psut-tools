@@ -31,7 +31,11 @@ if (location.pathname === '/StudentServices/StudentStudyPlan.aspx') { // only on
       en: 'Pass'
     }
   }
-  let credits = 0; // selected credit hours
+  let credits = {
+    passed: 0,
+    registered: 0,
+    selected: 0
+  };
 
   // get rows of the study plan
   const allTrs = document.getElementsByTagName('tr') // select all <tr> elements in the document because the layout and semantics of the page is beyond dogshit
@@ -45,6 +49,36 @@ if (location.pathname === '/StudentServices/StudentStudyPlan.aspx') { // only on
   // get rows of the passed courses
   const passed = Object.keys(rows).filter(
     row => rows[row].innerText.includes(strings.pass.ar) || rows[row].innerText.includes(strings.pass.en)).map(el => rows[el])
+
+  // Credit hours counter
+  let chStyle = {
+    position: 'sticky',
+    width: 'max-content',
+    height: 'max-content',
+    padding: '1rem',
+    border: '1px solid grey',
+    bottom: '10px',
+    left: '10px',
+    color: colors.primary,
+    display: 'flex',
+    'background-color': colors.selected,
+    'justify-content': 'center',
+    'align-items': 'start',
+    'flex-direction': 'column',
+    'font-size': '20px',
+    'border-radius': '10px',
+  }
+  chStyle = Object.keys(chStyle).map(p => `${p}: ${chStyle[p]}`).join(';')
+  document.querySelector('body')
+    .insertAdjacentHTML(
+      'beforeend',
+      `<div style='${chStyle}'>
+        <span style='font-weight: 600; margin-bottom: 1rem'>Credits</span>
+        <div>Passed:      <span id='passed-chs-count'>  ${credits.passed}  </span></div>
+        <div>Registered:  <span id='registered-chs-count'>  ${credits.registered}  </span></div>
+        <div>Selected:    <span id='selected-chs-count'>${credits.selected}</span></div>
+      </div>`
+    )
 
   // insert a checkbox in each row
   const tables = document.getElementsByClassName('GridViewStyle')
@@ -60,25 +94,27 @@ if (location.pathname === '/StudentServices/StudentStudyPlan.aspx') { // only on
     )
     // listen for checkboxes changes
     tr.querySelector('input').addEventListener('change', (e) => {
-      const ch = document.getElementById('chs-count')
       if (e.target.checked) {
-        credits += Number(tr.cells[2].innerText) // credit hours of selected course
+        credits.selected += Number(tr.cells[2].innerText) // credit hours of selected course
         tr.setAttribute('style', `background-color: ${colors.selected};`)
       }
       else {
-        credits -= Number(tr.cells[2].innerText)
+        credits.selected -= Number(tr.cells[2].innerText)
         tr.setAttribute('style', `background-color: ${colors.base};`)
       }
-      ch.innerText = credits
+      document.getElementById('selected-chs-count').innerText = credits.selected
     })
   })
 
-  // set background color for registered courses
   registered.forEach(tr => {
+    // set background color for registered courses
     tr.setAttribute('style', `background-color: ${colors.registered};`)
+
     const checkbox = tr.querySelector('input')
     checkbox.setAttribute('disabled', true)
     checkbox.setAttribute('checked', true)
+
+    credits.registered += Number(tr.cells[2].innerText)
   })
 
   passed.forEach(tr => {
@@ -88,31 +124,11 @@ if (location.pathname === '/StudentServices/StudentStudyPlan.aspx') { // only on
     const checkbox = tr.querySelector('input')
     checkbox.setAttribute('disabled', true)
     checkbox.setAttribute('checked', true)
+
+    credits.passed += Number(tr.cells[2].innerText)
   })
-
-  // Credit hours counter
-  let chStyle = {
-    position: 'sticky',
-    width: 'max-content',
-    height: '50px',
-    padding: '1rem',
-    border: '1px solid grey',
-    bottom: '10px',
-    left: '10px',
-    color: colors.primary,
-    display: 'flex',
-    'background-color': colors.selected,
-    'justify-content': 'center',
-    'align-items': 'center',
-    'flex-direction': 'column',
-    'font-size': '20px',
-    'border-radius': '100px',
-  }
-  chStyle = Object.keys(chStyle).map(p => `${p}: ${chStyle[p]}`).join(';')
-  document.querySelector('body')
-    .insertAdjacentHTML(
-      'beforeend',
-      `<div style='${chStyle}'>Selected Credits<span id='chs-count' style='display: block'>${credits}</span></div>`
-    )
-
+  // update registered and passed credits
+  credits.registered -= credits.passed
+  document.getElementById('registered-chs-count').innerText = credits.registered
+  document.getElementById('passed-chs-count').innerText = credits.passed
 }
