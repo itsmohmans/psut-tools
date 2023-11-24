@@ -1,0 +1,22 @@
+{
+  "name": "psut-better-exams-view",
+  "version": "1.0.0",
+  "description": "A simple script to make viewing your exams easier.",
+  "main": "main.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmohmans/psut-tools.git"
+  },
+  "keywords": [
+    "PSUT"
+  ],
+  "author": "Mo Mansour",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsmohmans/psut-tools/issues"
+  },
+  "homepage": "https://github.com/itsmohmans/psut-tools#readme"
+}
