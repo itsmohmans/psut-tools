@@ -6,5 +6,6 @@ A collection of tools to enhance PSUT's website - WIP
 
 - [Study Plan Enhancer](https://github.com/itsmohmans/psut-tools/tree/main/studyplan-enhancer)
 - [Better Exams View](https://github.com/itsmohmans/psut-tools/tree/main/better-exams-view)
+- [Hide Sidebar](https://github.com/itsmohmans/psut-tools/tree/main/hide-sidebar)
 
 (More to come...)
