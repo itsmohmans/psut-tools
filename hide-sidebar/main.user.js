@@ -58,7 +58,7 @@ const main = () => {
             sidebar.setAttribute(
                 "style",
                 obj2CSS({
-                    position: "absolute",
+                    position: "fixed",
                     transform: isEnglish ? "translateX(-190px)" : "translateX(190px)",
                     transition: '500ms all',
                     "z-index": 20
