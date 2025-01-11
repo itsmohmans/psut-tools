@@ -5,7 +5,7 @@ A simple script to add some styling and functionalities to PSUT's study plan pag
 ## Current Features
 
 - Different colors for passed, registered, and remaining courses
-- Checkboxes to select courses, highlighted with a different color
+- Checkboxes to select courses, highlighted with a different color (useful while registering for a new semester)
 - A floating box that keeps track of credits hours registered, passed, and user selected courses
 
 ## How to use
