@@ -6,6 +6,10 @@ A simple script to make viewing your exams easier.
 
 It styles previous exams with grey color and adds different colors to each exam type to help you skim through your exam schedule.
 
+Update v2: this script now shows the exams table in the previous place (in the old portal).
+
+<!-- TODO: make this script work for the new exams page -->
+
 ## How to use
 
 The easiest way to run this script is to install a user script browser extension like [Violentmonkey](https://violentmonkey.github.io/get-it/) (recommended) or [Tampermonkey](https://www.tampermonkey.net/index.php?browser=chrome).
