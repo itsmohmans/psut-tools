@@ -144,7 +144,7 @@
           ...generateIcsEvent(
             startDate,
             endDate,
-            ["RRULE:FREQ=DAILY"],
+            ["RRULE:FREQ=WEEKLY;BYDAY=SU,MO,TU,WE,TH"],
             eventTitle,
             eventDescription
           ),
