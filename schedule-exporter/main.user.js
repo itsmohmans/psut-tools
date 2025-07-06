@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://portal.psut.edu.jo:5050/StudentServices/StudentStudySchedule.aspx*
 // @grant       none
-// @version     1.0
+// @version     2.0
 // @author      Mo Mansour
 // @description 20/02/2025, 19:37:12
 //  - A script to export your current schedule to an ics file (which can be imported into a calendar app)
@@ -14,6 +14,10 @@
 
   const strings = {
     online: "Online",
+    dailyClass: {
+      en: "Daily",
+      ar: "يومياً",
+    },
     days: {
       en: [
         "Sunday",
@@ -63,6 +67,15 @@
     return { start, end };
   }
 
+  function generateIcsEvent(startDate, endDate, rules, title, description) {
+    return [
+      `DTSTART:${startDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
+      `DTEND:${endDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
+      ...rules,
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${description}`,
+    ]
+  }
   function generateIcsContent(courses) {
     let icsContent = [
       "BEGIN:VCALENDAR",
@@ -84,34 +97,58 @@
       const { start, end } = parseTime(time);
       const eventTitle = `${isOnline ? "" : "[" + classroom + "]"} ${title}`;
       const eventDescription = `${title}, ${id}, section ${section}, ${classroom}, ${instructor}`;
-
-      days.split(" ").forEach((day) => {
-        const dayIndex = getDayIndex(day, days.split(" ").length > 1);
-        if (dayIndex === -1) return;
-
-        const startDate = new Date();
-        startDate.setDate(
-          startDate.getDate() + ((dayIndex - startDate.getDay() + 7) % 7)
-        );
-        startDate.setHours(start.getHours(), start.getMinutes(), 0, 0);
-
-        const endDate = new Date(startDate);
-        endDate.setHours(end.getHours(), end.getMinutes(), 0, 0);
+      
+      // create a single event starting from today
+      const startDate = new Date();
+      startDate.setHours(start.getHours(), start.getMinutes(), 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setHours(end.getHours(), end.getMinutes(), 0, 0);
+      
+      icsContent.push("BEGIN:VEVENT");
+      
+      // if it's a daily class
+      if (
+        days.trim() === strings.dailyClass.en ||
+        days.trim() === strings.dailyClass.ar
+      ) {
 
         icsContent.push(
-          "BEGIN:VEVENT",
-          `DTSTART:${
-            startDate.toISOString().replace(/[-:]/g, "").split(".")[0]
-          }Z`,
-          `DTEND:${endDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
-          `RRULE:FREQ=WEEKLY;BYDAY=${
-            ["SU", "MO", "TU", "WE", "TH", "FR", "SA"][dayIndex]
-          }`,
-          `SUMMARY:${eventTitle}`,
-          `DESCRIPTION:${eventDescription}`,
-          "END:VEVENT\n"
+          ...generateIcsEvent(
+            startDate,
+            endDate,
+            ["RRULE:FREQ=DAILY"],
+            eventTitle,
+            eventDescription
+          ),
+          "END:VEVENT"
         );
-      });
+      } else {
+        // specific days of the week
+        // TODO: improve the recurrance of event logic
+        days.split(" ").forEach((day) => {
+          const dayIndex = getDayIndex(day, days.split(" ").length > 1);
+          if (dayIndex === -1) return;
+
+          startDate.setDate(
+            // start the schedule from the next upcoming class day based on today
+            startDate.getDate() + ((dayIndex - startDate.getDay() + 7) % 7)
+          );
+          startDate.setHours(start.getHours(), start.getMinutes(), 0, 0);
+
+          endDate.setHours(end.getHours(), end.getMinutes(), 0, 0);
+
+          icsContent.push(
+            ...generateIcsEvent(
+              startDate,
+              endDate,
+              [`RRULE:FREQ=WEEKLY;BYDAY=${["SU", "MO", "TU", "WE", "TH", "FR", "SA"][dayIndex]}`],
+              eventTitle,
+              eventDescription
+            ),
+            "END:VEVENT"
+          );
+        });
+      }
     });
 
     icsContent.push("END:VCALENDAR");
