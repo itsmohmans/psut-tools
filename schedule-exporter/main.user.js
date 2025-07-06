@@ -12,6 +12,7 @@
 (function () {
   "use strict";
 
+  const langs = ["ar", "en"];
   const strings = {
     online: "Online",
     dailyClass: {
@@ -50,10 +51,10 @@
       .join(";");
 
   function getDayIndex(day, multiDay) {
-    for (let lang of ["ar", "en"]) {
-      const index = multiDay
-        ? strings.multiDays[lang].indexOf(day)
-        : strings.days[lang].indexOf(day);
+    for (let lang of langs) {
+      const index = multiDay ?
+        strings.multiDays[lang].indexOf(day) :
+        strings.days[lang].indexOf(day);
       if (index !== -1) return index;
     }
     return -1;
@@ -67,6 +68,16 @@
     return { start, end };
   }
 
+  /**
+   * generates an ICS event as an array of strings
+   *
+   * @param {Date} startDate - The start date and time of the event.
+   * @param {Date} endDate - The end date and time of the event.
+   * @param {string[]} rules - Recurrence rules for the event (e.g., RRULE).
+   * @param {string} title - The title of the event.
+   * @param {string} description - The description of the event.
+   * @returns {string[]} - The array of ICS entries for this event.
+   */
   function generateIcsEvent(startDate, endDate, rules, title, description) {
     return [
       `DTSTART:${startDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
@@ -76,6 +87,23 @@
       `DESCRIPTION:${description}`,
     ]
   }
+
+  /**
+   * generates ICS content for a list of given courses.
+   *
+   * @param {Array<PsutCourse>} courses - An array of course objects to be exported as calendar events.
+   * @returns {string} The generated ICS file content as a string.
+   *
+   * @typedef {Object} PsutCourse
+   * @property {string} title - course title
+   * @property {string} id - course id
+   * @property {string|number} section - course section
+   * @property {string} instructor - instructor's name
+   * @property {string} classroom - classroom location
+   * @property {string} days - The days the course occurs (e.g., "Sun Tue Thu").
+   * @property {string} time - The time for the course (e.g., "08:00 09:30").
+   * @property {boolean} isOnline - Whether the course is online.
+   */
   function generateIcsContent(courses) {
     let icsContent = [
       "BEGIN:VCALENDAR",
